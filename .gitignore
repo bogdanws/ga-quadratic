@@ -1,0 +1,6 @@
+build/
+external/
+.cache/
+*.o
+*.a
+*.so

@@ -1,0 +1,27 @@
+BasedOnStyle: LLVM
+IndentWidth: 4
+ColumnLimit: 100
+
+BreakBeforeBraces: Attach
+
+# Includes
+SortIncludes: CaseInsensitive
+IncludeBlocks: Regroup
+IncludeCategories:
+  # Project headers (quoted)
+  - Regex:    '^"'
+    Priority: 1
+  # Standard library / system headers (angled)
+  - Regex:    '^<'
+    Priority: 2
+
+# Pointers & references
+PointerAlignment: Left
+
+# Short constructs
+AllowShortFunctionsOnASingleLine: Inline
+AllowShortIfStatementsOnASingleLine: Never
+AllowShortLoopsOnASingleLine: false
+
+SpaceBeforeParens: ControlStatements
+Cpp11BracedListStyle: true
