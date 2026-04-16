@@ -12,7 +12,6 @@ add_library(ga_core
     src/ga/population.cpp
     src/ga/ga.cpp
     src/io/config.cpp
-    src/io/format.cpp
     src/io/logger.cpp)
 target_include_directories(ga_core PUBLIC src)
 target_compile_options(ga_core PRIVATE -Wall -Wextra -Wpedantic)

@@ -1,0 +1,14 @@
+# Pop size
+20
+# Domain a b
+-1 2
+# Coefficients A B C  (f(x) = A x^2 + B x + C)
+-1 1 2
+# Precision (decimal digits)
+6
+# Crossover probability
+0.25
+# Mutation probability
+0.01
+# Generations
+50
