@@ -18,6 +18,16 @@
         "CMAKE_BUILD_TYPE": "Release",
         "CMAKE_EXPORT_COMPILE_COMMANDS": "ON"
       }
+    },
+    {
+      "name": "gui",
+      "displayName": "GUI (Release)",
+      "binaryDir": "${sourceDir}/build/gui",
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "Release",
+        "CMAKE_EXPORT_COMPILE_COMMANDS": "ON",
+        "GA_BUILD_GUI": "ON"
+      }
     }
   ],
   "buildPresets": [
@@ -28,6 +38,10 @@
     {
       "name": "release",
       "configurePreset": "release"
+    },
+    {
+      "name": "gui",
+      "configurePreset": "gui"
     }
   ]
 }

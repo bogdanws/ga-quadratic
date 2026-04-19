@@ -3,6 +3,10 @@
 #include "io/config.hpp"
 #include "io/logger.hpp"
 
+#ifdef GA_BUILD_GUI
+#include "gui/app.hpp"
+#endif
+
 #include <fstream>
 #include <iomanip>
 #include <iostream>
@@ -40,18 +44,23 @@ int main(int argc, char** argv) {
         return 2;
     }
 
-    Rng rng(cfg.seed.value_or(std::random_device{}()));
+    uint64_t seed = cfg.seed.value_or(std::random_device{}());
 
     if (cfg.gui) {
 #ifdef GA_BUILD_GUI
-        std::cerr << "TODO\n";
-        return 1;
+        try {
+            return gui::runGui(cfg.params, seed);
+        } catch (const std::exception& e) {
+            std::cerr << "Error: " << e.what() << "\n";
+            return 1;
+        }
 #else
         std::cerr << "Built without GUI support. Reconfigure with -DGA_BUILD_GUI=ON.\n";
         return 1;
 #endif
     }
 
+    Rng rng(seed);
     try {
         return runHeadless(cfg, rng);
     } catch (const std::exception& e) {
