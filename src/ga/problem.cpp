@@ -2,6 +2,7 @@
 
 #include <cmath>
 #include <stdexcept>
+#include <string>
 
 Problem Problem::make(double a, double b, double A, double B, double C, int precision) {
     if (a >= b) {
