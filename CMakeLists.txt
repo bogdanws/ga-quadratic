@@ -7,6 +7,17 @@ set(CMAKE_CXX_EXTENSIONS OFF)
 
 option(GA_BUILD_GUI "Build the ImGui+ImPlot GUI" OFF)
 
+# link the msvc runtime statically so release binaries don't need the vc++ redist
+if(MSVC)
+    set(CMAKE_MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>")
+endif()
+
+if(MSVC)
+    set(GA_WARN_FLAGS /W4)
+else()
+    set(GA_WARN_FLAGS -Wall -Wextra -Wpedantic)
+endif()
+
 add_library(ga_core
     src/ga/rng.cpp
     src/ga/problem.cpp
@@ -16,10 +27,10 @@ add_library(ga_core
     src/io/config.cpp
     src/io/logger.cpp)
 target_include_directories(ga_core PUBLIC src)
-target_compile_options(ga_core PRIVATE -Wall -Wextra -Wpedantic)
+target_compile_options(ga_core PRIVATE ${GA_WARN_FLAGS})
 
 add_executable(ga src/main.cpp)
-target_compile_options(ga PRIVATE -Wall -Wextra -Wpedantic)
+target_compile_options(ga PRIVATE ${GA_WARN_FLAGS})
 target_link_libraries(ga PRIVATE ga_core)
 
 if(GA_BUILD_GUI)
@@ -61,7 +72,11 @@ if(GA_BUILD_GUI)
         ${implot_SOURCE_DIR})
     target_link_libraries(imgui_static PUBLIC glfw)
     # silence warnings from third-party headers we don't control
-    target_compile_options(imgui_static PRIVATE -w)
+    if(MSVC)
+        target_compile_options(imgui_static PRIVATE /w)
+    else()
+        target_compile_options(imgui_static PRIVATE -w)
+    endif()
 
     find_package(OpenGL REQUIRED)
 

@@ -4,6 +4,10 @@ Genetic algorithm in C++ that maximizes `f(x) = Ax² + Bx + C` over a closed int
 
 ![GUI screenshot](screenshot.gif)
 
+## Pre-built binaries
+
+Linux and Windows x64 builds are attached to each [release](https://github.com/bogdanws/ga-quadratic/releases). Download the zip for your OS, unpack, and run `ga` / `ga.exe`.
+
 ## Building
 
 **Dependencies (Linux):**

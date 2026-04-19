@@ -1,0 +1,91 @@
+name: release
+
+# manual only: run from the actions tab. bump `version` when you want a new release.
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: "version tag (e.g. v1.0.0). leave blank to just upload artifacts without creating a release."
+        required: false
+        default: ""
+
+jobs:
+  build:
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: ubuntu-latest
+            artifact: ga-linux-x64
+            exe: ga
+          - os: windows-latest
+            artifact: ga-windows-x64
+            exe: ga.exe
+
+    runs-on: ${{ matrix.os }}
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: install linux deps
+        if: runner.os == 'Linux'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y \
+            libgl1-mesa-dev libxinerama-dev libxcursor-dev \
+            libxi-dev libxrandr-dev libxxf86vm-dev pkg-config \
+            libwayland-dev wayland-protocols libxkbcommon-dev
+
+      - name: configure
+        run: cmake --preset gui
+
+      - name: build
+        # --config Release is a no-op on single-config generators (make) but
+        # needed on the visual studio generator used on windows-latest
+        run: cmake --build build/gui --config Release -j
+
+      - name: stage artifact
+        shell: bash
+        run: |
+          mkdir -p dist
+          # visual studio generator puts the exe in build/gui/Release/, make puts it in build/gui/
+          if [ -f "build/gui/Release/${{ matrix.exe }}" ]; then
+            cp "build/gui/Release/${{ matrix.exe }}" dist/
+          else
+            cp "build/gui/${{ matrix.exe }}" dist/
+          fi
+          cp README.md input.txt dist/
+
+      - name: upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ matrix.artifact }}
+          path: dist/
+
+  release:
+    needs: build
+    if: inputs.version != ''
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          path: artifacts
+
+      - name: zip artifacts
+        run: |
+          cd artifacts
+          for d in */; do
+            name="${d%/}"
+            (cd "$d" && zip -r "../${name}.zip" .)
+          done
+          ls -la
+
+      - name: create release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ inputs.version }}
+          name: ${{ inputs.version }}
+          files: artifacts/*.zip
+          generate_release_notes: true
